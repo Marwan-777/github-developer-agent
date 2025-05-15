@@ -1,0 +1,149 @@
+
+
+ ===================================== File structure ===================================== 
+
+├── .ipynb_checkpoints
+│   ├── NYC Uber fare EDA and Model Training-checkpoint.ipynb
+│   ├── Untitled-checkpoint.ipynb
+│   ├── Untitled1-checkpoint.ipynb
+│   └── uber-checkpoint.csv
+├── README.md
+├── development
+│   ├── .ipynb_checkpoints
+│   │   └── NYC Uber fare EDA and Model Training-checkpoint.ipynb
+│   ├── NYC Uber fare EDA and Model Training.ipynb
+│   ├── dev_env_requirements.txt
+│   ├── mlflow.db
+│   ├── mlruns
+│   │   └── 1
+│   │       ├── 0cb11cdafef74d07b10c0c983c08163f
+│   │       │   └── artifacts
+│   │       │       └── models_pickle
+│   │       │           └── xgb_r_tuned.bin
+│   │       └── 32d2d45e4b6f4e4b91fbe5e9dbf37325
+│   │           └── artifacts
+│   │               └── models_pickle
+│   │                   └── xgb_r.bin
+│   └── models
+│       ├── xgb_r.bin
+│       └── xgb_r_tuned.bin
+├── production
+│   ├── .ipynb_checkpoints
+│   │   ├── API_cloud_test-checkpoint.ipynb
+│   │   ├── API_local_test-checkpoint.py
+│   │   └── Model apply automation-checkpoint.ipynb
+│   ├── API_cloud_test.ipynb
+│   ├── API_local_test.py
+│   ├── Dockerfile
+│   ├── Model apply pipeline.ipynb
+│   ├── get_model.py
+│   ├── prediction_API_script.py
+│   ├── prod_env_requirements.txt
+│   └── production_model.bin
+└── uber.csv
+
+
+ ===================================== README.md ===================================== 
+
+1) Summary:
+This README describes a web service that predicts Uber fares. It details the creation of a machine learning model tracked with MLflow, served via a Flask API, dockerized for consistent environments, and deployed on Google Cloud Run for scalable predictions. Users can query the service by sending ride data in JSON format to the API endpoint.
+
+2) Code flow string:
+(empty, as this is a markdown README file, no explicit code or function calls are described)
+
+3) Frameworks or modules used:
+- Python
+- Flask
+- MLflow
+- Docker
+- GCP Cloud Run
+
+ ===================================== development/NYC Uber fare EDA and Model Training.ipynb ===================================== 
+
+1) Summary:  
+This script performs an end-to-end machine learning pipeline on NYC Uber ride data. It loads the data, preprocesses datetime and location features (calculating Haversine distance), cleans passenger counts, applies cyclical transformations to time-related features, and then builds an XGBoost regression model to predict fare amounts. The model is trained, evaluated, and tuned using randomized search with hyperparameter optimization, all tracked via MLflow. Final models are saved as pickle files.
+
+2) Code flow:  
+haversine_distance --> (applied via lambda) --> df['distance_km']  
+ML pipeline:  
+data preprocessing --> feature engineering --> train_test_split --> XGBRegressor (default) --> eval --> RandomizedSearchCV(xgb) --> tuned model training & eval --> MLflow logging  
+
+3) Frameworks/modules used:  
+- pandas  
+- numpy  
+- mlflow  
+- math (radians, sin, cos, sqrt, atan2)  
+- matplotlib.pyplot  
+- seaborn  
+- datetime  
+- sklearn (metrics, model_selection)  
+- xgboost  
+- warnings  
+- os  
+- pickle
+
+ ===================================== production/API_cloud_test.ipynb ===================================== 
+
+1) Summary:
+This script prepares a JSON payload containing taxi ride details (pickup/dropoff coordinates, datetime, passenger count) and sends it as a POST request to a deployed Uber fare prediction model's API endpoint. It then prints the predicted fare response from the API.
+
+2) Code flow:
+(no user-defined functions or classes, so no specific flow diagram)
+
+3) Frameworks or modules used:
+- requests
+
+ ===================================== production/API_local_test.py ===================================== 
+
+1) This script sends a JSON-formatted POST request with taxi trip details (pickup/dropoff coordinates, datetime, passenger count) to a locally hosted prediction API and prints the API's JSON response.
+
+2) 
+
+(No user-defined functions or classes; simple linear script, so no flow diagram needed.)
+
+3) Modules used:
+- requests
+
+ ===================================== production/Model apply pipeline.ipynb ===================================== 
+
+1) Summary:  
+This script loads a production ML model to predict Uber fare amounts based on GPS and datetime data. It reads a single data point, processes datetime and location into features including haversine distance and cyclic time encodings, and then makes a fare prediction using a pre-trained model loaded from a pickle file.
+
+2) Code flow:  
+haversine_distance --> data_processing --> predict --> model.predict
+
+3) Frameworks or modules used:  
+- pandas  
+- pickle  
+- datetime  
+- numpy  
+- copy  
+- math (for radians, sin, cos, sqrt, atan2)
+
+ ===================================== production/get_model.py ===================================== 
+
+1) This script loads a serialized model file from a specified run directory (based on a run_id passed as a command-line argument), reads the model using pickle, and then saves (dumps) the model into a new file named 'production_model.bin' in the current directory.
+
+2) 
+
+(none — script performs sequential steps with no user-defined functions or classes)
+
+3) Frameworks or modules used:
+- sys
+- pickle
+- os
+
+ ===================================== production/prediction_API_script.py ===================================== 
+
+1) Summary:  
+This Python script provides a Flask web service for taxi fare prediction. It processes input JSON data that includes trip details (timestamps and GPS coordinates), calculates geographical and temporal features (like Haversine distance and cyclical time encodings), loads a pre-trained machine learning model from a pickle file, and returns predicted fare amounts via a POST endpoint '/predict'.
+
+2) Code flow:  
+haversine_distance --> data_processing --> predict --> predict_endpoint --> Flask app route
+
+3) Frameworks or modules used:  
+- pandas  
+- pickle  
+- numpy  
+- math  
+- flask
